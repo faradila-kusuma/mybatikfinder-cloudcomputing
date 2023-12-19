@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Prediction Result</h1>
+
+    <!-- Form untuk unggah gambar -->
+    <form action="/get_prediction" method="post" enctype="multipart/form-data">
+        <label for="file">Upload an image:</label>
+        <input type="file" name="file" id="file" accept=".jpg, .jpeg, .png, .gif">
+        <br>
+        <input type="submit" value="Get Prediction">
+    </form>
+
+    <!-- Menampilkan hasil prediksi -->
+    {% if prediction_info %}
+        <div class="result" id="predictedCategory">
+            <p>Jenis Batik: {{ prediction_info.predicted_category }}</p>
+            <p>Asal Daerah: {{ prediction_info.origin }}</p>
+            <p>Pola Batik: {{ prediction_info.pattern }}</p>
+            <p>Teknik Pembuatan: {{ prediction_info.technique }}</p>
+            <p>Sejarah: {{ prediction_info.history }}</p>
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="error" id="errorMessage">
+            Error: {{ error }}
+        </div>
+    {% endif %}
+
+    <script>
+        // Kode untuk mendapatkan hasil prediksi
+        function getPrediction() {
+            // Memanggil endpoint dari Flask
+            fetch("/get_prediction", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Menampilkan hasil prediksi
+                document.getElementById("predictedCategory").textContent = "Predicted category: " + data.predictedCategory;
+            })
+            .catch(error => console.error("Error fetching prediction:", error));
+        }
+    </script>
+</body>
+</html>
